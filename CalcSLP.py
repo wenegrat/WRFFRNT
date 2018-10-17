@@ -122,7 +122,7 @@ pmean = pmean[:,np.newaxis]
 
 #%%
 plt.rcParams.update({'font.size': 22})
-
+plt.rcParams['contour.negative_linestyle'] = 'solid'
 tr = range(40, 70)
 cm = cmo.thermal
 #plt.figure()
@@ -138,36 +138,45 @@ fig, axs = plt.subplots(2, 2, sharex=True, sharey=True, figsize=(10,8))
 ax =  axs.reshape(-1)
 offset = 18
 
-cl = 0.05
+cl = 0.04
 contst = np.linspace(-cl, cl, 40)
 conts = np.linspace(-1395, -850, 30)
 conts = np.linspace(-1401, -850, 25)
 conts = np.linspace(-1401, -625, 15)
 conts = np.linspace(-1401, -626, 15)
+#conts = np.linspace(-1401.5, -641, 30)
+conts = np.array(list(range(-1401, -600, 25)))-0.1
 for i in range(0, 4):
     tr = range(i*offset, i*offset + offset)
 
 
 
-    im = ax[i].contourf(np.linspace(0, 10, 500), z[0,1:,0,0], np.mean(t_avg[tr,:,:], axis=0),contst, cmap=cm)
+    im = ax[i].contourf(np.linspace(0, 10, 500), z[0,1:,0,0], np.mean(t_avg[tr,:,:], axis=0),contst, cmap=cm, extend='both')
     for a in im.collections:
         a.set_edgecolor('face')
-    ax[i].contour(np.linspace(0, 10, 501), z[0,1:,0,0], np.mean(psi[tr,:,:], axis=0), conts, colors='k')
+    ax[i].contour(np.linspace(0, 10, 501), z[0,1:,0,0], np.mean(psi[tr,:,:], axis=0), conts, colors='k', linewidths=0.75)
     #im = plt.pcolor(np.linspace(0, 10, 501), z[0,:,0,0], np.mean(flip(ua[tr,:,:], axis=1), axis=0))
     
     #plt.contour(np.linspace(0, 10, 500), z[0,:,0,0], np.mean(P[ti,:,:,:], 1), 10)
     im.set_clim((-cl, cl))
 #    plt.colorbar(im)
     ax[i].set_ylim((0, 1200))
+    ax[i].set_yticks([0, 400, 800, 1200])
+    if (i % 2) == 0:
+        ax[i].set_ylabel('z [m]')
+    if i>1:
+        ax[i].set_xlabel('x [km]')
 #    ax[i].set_title('Hour: %i - %i' %((i*offset/6), (i*offset/6 + offset/6)))
-    ax[i].text(0.2, 1125, 'Hour: %i - %i' %((i*offset/6), (i*offset/6 + offset/6)), bbox={'facecolor':'white'})
+    ax[i].text(7, 1100, 'Hour: %i - %i' %((i*offset/6), (i*offset/6 + offset/6)), bbox={'facecolor':'white'}, fontsize=12)
 plt.subplots_adjust(wspace=.10, hspace=0.10)    
 fig.subplots_adjust(right=0.8)
 cbar_ax = fig.add_axes([0.85, 0.15, 0.025, 0.7])
 cb = fig.colorbar(im, cax=cbar_ax, ticks=[-cl, 0, cl], label='$^\circ$ K')
 cb.ax.tick_params(labelsize=16)
 cb.ax.set_yticklabels(cb.ax.get_yticklabels(), fontsize=16)
-#plt.savefig('T_Psi.pdf', bbox_inches='tight')
+cb.solids.set_edgecolor("face")
+#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/working directory/T_Psi.pdf', bbox_inches='tight')
+
 #plt.tight_layout()
 #%%
 ti

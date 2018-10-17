@@ -12,7 +12,9 @@ import matplotlib.ticker as ticker
 import matplotlib.dates as mdates
 import datetime as dt
 from scipy import ndimage
+from cmocean import cm as cmo
 
+#%%
 plt.rcParams['text.usetex'] = True
 plt.rcParams['mathtext.fontset'] = 'stix'
 plt.rcParams['font.family'] = 'STIXGeneral'
@@ -314,79 +316,102 @@ t = np.array([tStart + dt.timedelta(minutes=n*10) for n in range(nt)])
 # tout = 10
 # t = np.arange(0,nt*tout,tout)/60.0 #hours
 # t = t / 17.5
-cl = 2e-11
+
+cm = 'RdBu_r'
+
+cl = 3e-11
+conts = np.linspace(-cl, cl, 100)
 ls = 14
 L = 10.0
-plt.figure(figsize=(12,8))
+fig= plt.figure(figsize=(12,8))
 
 plt.subplot(2,2,1)
-plt.pcolormesh(x[1:-1],t,-UADV_filt,cmap='RdBu_r')
-plt.colorbar()
+plt.pcolormesh(x[1:-1],t,-UADV_filt,cmap=cm)
+#im = plt.contourf(x[1:-1],t,-UADV_filt, conts, cmap = cm, extend='both')
+#for a in im.collections:
+#        a.set_edgecolor('face')
 plt.clim(-cl, cl)
 plt.plot([L/4,L/4],[t[0],t[-1]],'k--',linewidth=2)
 plt.plot([3*L/4,3*L/4],[t[0],t[-1]],'k--',linewidth=2)
-plt.title('HCONV',fontsize=24)
-plt.xlabel('$x\ \mathrm{[km]}$',fontsize=24)
+#plt.title('HCONV',fontsize=24)
+#plt.xlabel('$x\ \mathrm{[km]}$',fontsize=24)
 # plt.ylabel('$t/T$',fontsize=24)
-plt.ylabel(r'$\mathrm{Time}$',fontsize=24)
-plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-
+plt.ylabel(r'$\mathrm{Hour}$',fontsize=24)
+plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%H'))
+plt.gca().set_xticklabels([])
 plt.tick_params(labelsize=ls)
+plt.text(.8, .9, 'HCNV', bbox={'facecolor':'white'}, fontsize=16, transform=plt.gca().transAxes)
 
 plt.subplot(2,2,2)
-plt.pcolormesh(x[1:-1],t,-WADV_filt,cmap='RdBu_r')
-plt.colorbar()
+plt.pcolormesh(x[1:-1],t,-WADV_filt,cmap=cm)
+#im = plt.contourf(x[1:-1],t,-WADV_filt,conts, cmap=cm, extend='both')
+#for a in im.collections:
+#        a.set_edgecolor('face')
 plt.clim(-cl, cl)
 plt.plot([L/4,L/4],[t[0],t[-1]],'k--',linewidth=2)
 plt.plot([3*L/4,3*L/4],[t[0],t[-1]],'k--',linewidth=2)
-plt.title('VCONV',fontsize=24)
-plt.xlabel('$x\ \mathrm{[km]}$',fontsize=24)
+#plt.title('VDEF',fontsize=24)
+#plt.xlabel('$x\ \mathrm{[km]}$',fontsize=24)
 # plt.ylabel('$t/T$',fontsize=24)
-plt.ylabel(r'$\mathrm{Time}$',fontsize=24)
-plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-
+#plt.ylabel(r'$\mathrm{Hour}$',fontsize=24)
+plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%H'))
+plt.gca().set_yticklabels([])
 plt.tick_params(labelsize=ls)
+plt.gca().set_xticklabels([])
+plt.text(.8, .9, 'VDEF', bbox={'facecolor':'white'}, fontsize=16, transform=plt.gca().transAxes)
+
 
 plt.subplot(2,2,3)
 #plt.pcolormesh(x[1:],t,-dxdzwpTp,cmap='RdBu_r')
-plt.pcolormesh(x[1:],t,-VDIFF_filt,cmap='RdBu_r')
-
-plt.colorbar()
+plt.pcolormesh(x[1:],t,-VDIFF_filt,cmap=cm)
+#im = plt.contourf(x[1:],t,-VDIFF_filt,conts, cmap=cm, extend='both')
+#for a in im.collections:
+#        a.set_edgecolor('face')
 plt.clim(-cl, cl)
 plt.plot([L/4,L/4],[t[0],t[-1]],'k--',linewidth=2)
 plt.plot([3*L/4,3*L/4],[t[0],t[-1]],'k--',linewidth=2)
-plt.title('VMIX',fontsize=24)
+#plt.title('VMIX',fontsize=24)
 plt.xlabel('$x\ \mathrm{[km]}$',fontsize=24)
 # plt.ylabel('$t/T$',fontsize=24)
-plt.ylabel(r'$\mathrm{Time}$',fontsize=24)
-plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+plt.ylabel(r'$\mathrm{Hour}$',fontsize=24)
+
+plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%H'))
 
 plt.tick_params(labelsize=ls)
+plt.text(.8, .9, 'VMIX', bbox={'facecolor':'white'}, fontsize=16, transform=plt.gca().transAxes)
 
 plt.subplot(2,2,4)
 #plt.pcolormesh(x[1:-2],t,-ddxxupTp,cmap='RdBu_r')
-plt.pcolormesh(x[1:-2],t,-HDIFF_filt,cmap='RdBu_r')
-
-plt.colorbar()
+im = plt.pcolormesh(x[1:-2],t,-HDIFF_filt,cmap=cm)
+#im = plt.contourf(x[1:-2],t,-HDIFF_filt,conts, extend='both', cmap=cm)
+#for a in im.collections:
+#        a.set_edgecolor('face')
 plt.clim(-cl, cl)
 plt.plot([L/4,L/4],[t[0],t[-1]],'k--',linewidth=2)
 plt.plot([3*L/4,3*L/4],[t[0],t[-1]],'k--',linewidth=2)
-plt.title('HMIX',fontsize=24)
+#plt.title('HMIX',fontsize=24)
 plt.xlabel('$x\ \mathrm{[km]}$',fontsize=24)
 # plt.ylabel('$t/T$',fontsize=24)
-plt.ylabel(r'$\mathrm{Time}$',fontsize=24)
-plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-
+#plt.ylabel(r'$\mathrm{Hour}$',fontsize=24)
+plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%H'))
+plt.gca().set_yticklabels([])
 plt.tick_params(labelsize=ls)
+plt.text(.8, .9, 'HMIX', bbox={'facecolor':'white'}, fontsize=16, transform=plt.gca().transAxes)
 
-
-
+plt.subplots_adjust(wspace=.10, hspace=0.10)    
+fig.subplots_adjust(right=0.8)
+cbar_ax = fig.add_axes([0.85, 0.15, 0.025, 0.7])
+cb = fig.colorbar(im, cax=cbar_ax, ticks=[-cl, 0, cl], label='$\\times 10^{-11}$ [K m$^{-2}$s$^{-1}]$', extend='both')
+cb.ax.tick_params(labelsize=16)
+cb.ax.set_yticklabels(cb.ax.get_yticklabels(), fontsize=16)
+cb.solids.set_edgecolor("face")
 if savefig:
     plt.savefig(outfig,dpi=100)
 else:
     plt.show()
-plt.tight_layout()
 
-plt.savefig('/jacobt_frontogenesis.pdf')
+
+#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/working directory/frontogenesis.pdf', bbox_inches='tight')
+
 #close data
 #data.close()

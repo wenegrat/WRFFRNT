@@ -10,7 +10,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import datetime as dt
+plt.rcParams['text.usetex'] = True
+plt.rcParams['mathtext.fontset'] = 'stix'
+plt.rcParams['font.family'] = 'STIXGeneral'
 
+#%%
 #inputs
 savefig = False
 outfig_u = 'budget_hov_u_200m_new.png'
@@ -300,13 +304,14 @@ for k in range(1, nk+1):
 
 #%% ZONAL
 #Set time range
+plt.rcParams.update({'font.size': 18})
 
 nh = 0.25
-zl = 300
+zl = 500
 xl = [2.5, 7.5]
 xlim = 1.5e-4
 
-plt.figure()
+fig = plt.figure(figsize=(10,10))
 for i in range(0, 2):
     #Set x range
     tind1 = np.int((i+nh)*60/10)
@@ -321,7 +326,7 @@ for i in range(0, 2):
     if warm:
         xr = np.r_[range(0, xlind1), range(xlind2, 498)]  
     
-    plt.subplot(2,2,2*i + 1)
+    ax1 = plt.subplot(2,2,2*i + 1)
     plt.plot(np.mean(np.mean(dudt_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]),linestyle='--', label='TEND')
 
     plt.plot(np.mean(np.mean(-ududx_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='UADV')
@@ -330,11 +335,13 @@ for i in range(0, 2):
     plt.plot(np.mean(np.mean(cor_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label = 'COR')
     plt.plot(np.mean(np.mean(-ddzupwp_avg[tind1:tind2,:,xr]+vdiff_u_avg[tind1:tind2,:,xr]+0*cor_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='VDIFF')
     plt.plot(np.mean(np.mean(-ddxupup_avg[tind1:tind2,:,xr]+hdiff_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='HDIFF')
-    plt.legend()
-    plt.ylim((0, zl))
+#    plt.legend()
+    plt.ylim((zf[1], zl))
     plt.xlim((-xlim, xlim))
     plt.grid()
-    plt.title('Warm SST   Hour: %i' % int(tind1/6))
+    plt.title('Warm SST   Hours: %i - %i' % (int(tind1/6), int(tind2/6)))
+    plt.ylabel('z [m]')
+    plt.xlabel('[m s$^{-2}$]')
     #Set x range
     warm = False
     xlind1 = np.where(xs>xl[0])[0][0]
@@ -344,21 +351,36 @@ for i in range(0, 2):
     if warm:
         xr = np.r_[range(0, xlind1), range(xlind2, 498)]  
     
-    plt.subplot(2,2,2*(i+1))
-    plt.plot(np.mean(np.mean(dudt_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]),linestyle='--', label='TEND')
+    ax2 = plt.subplot(2,2,2*(i+1))
+    l1 = plt.plot(np.mean(np.mean(dudt_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]),linestyle='--', label='TEND')[0]
 
-    plt.plot(np.mean(np.mean(-ududx_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='UADV')
-    plt.plot(np.mean(np.mean(-wdudz_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='WADV')
-    plt.plot(np.mean(np.mean(pres_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='PRES')
-    plt.plot(np.mean(np.mean(cor_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label = 'COR')
-    plt.plot(np.mean(np.mean(-ddzupwp_avg[tind1:tind2,:,xr]+vdiff_u_avg[tind1:tind2,:,xr]+0*cor_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='VDIFF')
-    plt.plot(np.mean(np.mean(-ddxupup_avg[tind1:tind2,:,xr]+hdiff_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='HDIFF')
-    plt.legend()
-    plt.ylim((0, zl))
+    l2 = plt.plot(np.mean(np.mean(-ududx_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='UADV')[0]
+    l3 = plt.plot(np.mean(np.mean(-wdudz_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='WADV')[0]
+    l4 = plt.plot(np.mean(np.mean(pres_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='PRES')[0]
+    l5 = plt.plot(np.mean(np.mean(cor_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label = 'COR')[0]
+    l6 = plt.plot(np.mean(np.mean(-ddzupwp_avg[tind1:tind2,:,xr]+vdiff_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='VDIFF')[0]
+    l7 = plt.plot(np.mean(np.mean(-ddxupup_avg[tind1:tind2,:,xr]+hdiff_u_avg[tind1:tind2,:,xr], axis=0), axis=-1), np.array(zf[0:nk+1]), label='HDIFF')[0]
+#    plt.legend()
+    plt.ylim((zf[1], zl))
+    plt.ylabel('z [m]')
+    plt.xlabel('[m s$^{-2}$]')
     plt.xlim((-xlim, xlim))
-    plt.title('Cold SST   Hour: %i' % int(tind1/6))
+    plt.title('Cold SST   Hours: %i - %i' % (int(tind1/6), int(tind2/6)))
 
     plt.grid()
+labels = ['$\\frac{\partial \overline{u}}{\partial t}$',
+          '$-\overline{u}\;\overline{u}_x$',
+          '$-\overline{w}\;\overline{u}_z$',
+          '$-\\frac{1}{\\rho}\overline{P}_x$',
+          '$f\overline{v}$', 
+          "$-\overline{u'w'}_z + \overline{F}^z$",
+          "$-\overline{u'u'}_x + \overline{F}^x$"]
+plt.tight_layout()
+plt.subplots_adjust(right = 0.75)
+fig.legend((l1, l2, l3, l4, l5, l6, l7), labels, loc="center right", fontsize=18)
+
+#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/working directory/MomProfiles.pdf', bbox_inches='tight')
+
 #%% HOV
 #Set x range
 nt = 106
