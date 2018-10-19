@@ -23,7 +23,7 @@ savefig = False
 zplot = 50
 
 #FORCED#####################################################################################
-dirall = '/media/ExtDriveFolder/WRFRUNS'
+dirall = '/media/ExtDriveFolder/WRFRUNS/StrongRun1'
 wrfout = ['/wrfout_d01_0001-01-02_', \
           '/wrfout_d01_0001-01-02_', \
           '/wrfout_d01_0001-01-02_', \
@@ -98,10 +98,10 @@ t2mt1 = 0.005 # look at t_avg over warm vs cold pool (need to pick a height)
 presaccel = R*np.log(p0/p1)*t2mt1/(2*(h+L))
 #%%
 ti = 12
-zi = 50
+zi = 10
 plt.figure()
-#plt.plot(np.mean(slp[ti,:,:], axis=0)-1e5)
-plt.plot(-t_int[ti, zi, :])
+plt.plot(np.mean(slp[ti,:,:], axis=0))
+#plt.plot(-t_avg[ti, zi, :])
 
 #%% Calculate overturning stream function.
 def flip(m, axis):
@@ -139,13 +139,16 @@ ax =  axs.reshape(-1)
 offset = 18
 
 cl = 0.04
-contst = np.linspace(-cl, cl, 40)
+cl = 0.15
+contst = np.linspace(-cl, cl, 25)
 conts = np.linspace(-1395, -850, 30)
 conts = np.linspace(-1401, -850, 25)
 conts = np.linspace(-1401, -625, 15)
 conts = np.linspace(-1401, -626, 15)
 #conts = np.linspace(-1401.5, -641, 30)
-conts = np.array(list(range(-1401, -600, 25)))-0.1
+conts = np.array(list(range(-1401, -400, 25)))-0.1
+conts = np.array(list(range(-1401, -400, 25)))-1
+
 for i in range(0, 4):
     tr = range(i*offset, i*offset + offset)
 
@@ -160,22 +163,22 @@ for i in range(0, 4):
     #plt.contour(np.linspace(0, 10, 500), z[0,:,0,0], np.mean(P[ti,:,:,:], 1), 10)
     im.set_clim((-cl, cl))
 #    plt.colorbar(im)
-    ax[i].set_ylim((0, 1200))
-    ax[i].set_yticks([0, 400, 800, 1200])
+    ax[i].set_ylim((0, 1400))
+    ax[i].set_yticks([0, 700, 1400])
     if (i % 2) == 0:
         ax[i].set_ylabel('z [m]')
     if i>1:
         ax[i].set_xlabel('x [km]')
 #    ax[i].set_title('Hour: %i - %i' %((i*offset/6), (i*offset/6 + offset/6)))
-    ax[i].text(7, 1100, 'Hour: %i - %i' %((i*offset/6), (i*offset/6 + offset/6)), bbox={'facecolor':'white'}, fontsize=12)
+    ax[i].text(7, 1300, 'Hour: %i - %i' %((i*offset/6), (i*offset/6 + offset/6)), bbox={'facecolor':'white'}, fontsize=12)
 plt.subplots_adjust(wspace=.10, hspace=0.10)    
 fig.subplots_adjust(right=0.8)
 cbar_ax = fig.add_axes([0.85, 0.15, 0.025, 0.7])
-cb = fig.colorbar(im, cax=cbar_ax, ticks=[-cl, 0, cl], label='$^\circ$ K')
+cb = fig.colorbar(im, cax=cbar_ax, ticks=[-cl, 0, cl], label='K')
 cb.ax.tick_params(labelsize=16)
 cb.ax.set_yticklabels(cb.ax.get_yticklabels(), fontsize=16)
 cb.solids.set_edgecolor("face")
-#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/working directory/T_Psi.pdf', bbox_inches='tight')
+#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/Manuscript/T_PsiStrong.pdf', bbox_inches='tight')
 
 #plt.tight_layout()
 #%%
@@ -201,14 +204,19 @@ plt.ylim((0, 300))
 
 #%%
 plt.figure()
-plt.pcolor(slp_avg)
+plt.pcolormesh(np.linspace(0, 10, 500), z[0,1:,0,0], np.mean(-(t_avg[tr,1:,:] - t_avg[tr, :-1, :])/(z[:,2:,:,0] - z[:, :-2,:,0]), axis=0))
+plt.contour(np.linspace(0, 10, 500), z[0,2:,0,0], np.mean(-(t_avg[tr,1:,:] - t_avg[tr, :-1, :])/(z[:,2:,:,0] - z[:, :-2,:,0]), axis=0), [-0.003, -0.0003], colors='k')
+
+#plt.clim((-0.1, 0.1))
 plt.colorbar()
-#%%
-tr = range(12, 18)
-plt.figure()
-plt.subplot(1,2,1)
-plt.plot(np.mean(slp_avg[tr,:], axis=0))
+#%% CONFIRM HYDROSTATIC PRESSURE GRADIENT FORCING 
+zi = 70
+tr = range(1*6, 2*6)
+fig, ax = plt.subplots()
+ax.plot(np.linspace(0, 10, 500), np.mean(slp_avg[tr,:], axis=0))
 #plt.plot(np.mean(phd_avg[0:10,:], axis=0))
 
-plt.subplot(1,2,2)
-plt.plot(np.mean(sft_avg[tr,:], axis=0))
+ax2 = ax.twinx()
+#plt.plot(np.mean(sft_avg[tr,:], axis=0))
+ax2.plot(np.linspace(0, 10, 500), np.mean(-t_int[tr, zi,:], axis=0))
+ax.set_title(z[0,zi,0,0])

@@ -24,7 +24,7 @@ savefig = True
 figfile = 'v_zeta_filt_x2km_y2km_hov.png'
 zplot = 10
 
-dirall = '/media/ExtDriveFolder/WRFRUNS'
+dirall = '/media/ExtDriveFolder/WRFRUNS/WeakRun1'
 wrfout = ['/wrfout_d01_0001-01-02_', \
           '/wrfout_d01_0001-01-02_', \
           '/wrfout_d01_0001-01-02_', \
@@ -102,11 +102,13 @@ t = np.array([tStart + dt.timedelta(minutes=n*10) for n in range(nt)])
 cmv = cmo.balance
 cm = cmo.curl
 conts = np.linspace(-10, 10, 30)
+conts = np.linspace(-20, 20, 30)
 contsu = np.linspace(-1, 1, 30)
 contsv = np.linspace(0, 5, 30)
 
 nc = np.linspace(-0.03, 0.03, 5)
-
+nc = np.linspace(-0.06, 0.06, 13)
+#nc = np.concatenate((np.linspace(-0.06, -0.01, 6), np.linspace(0.01, 0.06, 6)))
 L = 10.0
 plt.figure(figsize=(16,12))
 
@@ -120,7 +122,8 @@ cb.ax.tick_params(labelsize=16)
 cb.solids.set_edgecolor("face")
 
 #plt.clim(-1, 1)
-plt.contour(x, t, temp, nc, colors='k')
+#plt.contour(x, t, temp, nc, colors='0.1', linewidths=0.6)
+plt.contour(x, t, ndimage.uniform_filter(temp,mode='nearest',size=(3,1)), nc, colors='0.1', linewidths=0.7)
 plt.plot([L/4,L/4],[t[0],t[-1]],'w--',linewidth=1)
 plt.plot([L/4-0.25,L/4+0.25],[t[-1],t[-1]],'w--',linewidth=10)
 #plt.plot([L/4-0.25,L/4+0.25],[t[0]+dt.timedelta(minutes=-30),t[0]+dt.timedelta(minutes=-30)],'w--',linewidth=10)
@@ -144,7 +147,8 @@ cb.ax.tick_params(labelsize=16)
 cb.solids.set_edgecolor("face")
 
 #plt.clim(0, 5)
-plt.contour(x, t, temp, nc, colors='k')
+#plt.contour(x, t, temp, nc, colors='0.1', linewidths=0.6)
+plt.contour(x, t, ndimage.uniform_filter(temp,mode='nearest',size=(3,1)), nc, colors='0.1', linewidths=0.7)
 plt.plot([L/4,L/4],[t[0],t[-1]],'w--',linewidth=1)
 plt.plot([L/4-0.25,L/4+0.25],[t[-1],t[-1]],'w--',linewidth=10)
 #plt.plot([L/4-0.25,L/4+0.25],[t[0]+dt.timedelta(minutes=-30),t[0]+dt.timedelta(minutes=-30)],'w--',linewidth=10)
@@ -167,9 +171,10 @@ cb = plt.colorbar(ticks=[conts[0], 0, conts[-1]])
 cb.ax.tick_params(labelsize=16)
 
 
-plt.clim(-10, 10)
+#plt.clim(-10, 10)
 cb.solids.set_edgecolor("face")
-plt.contour(x, t, temp, nc, colors='k')
+#plt.contour(x, t, temp, nc, colors='0.1', linewidths=0.6)
+plt.contour(x, t, ndimage.uniform_filter(temp,mode='nearest',size=(3,1)), nc, colors='0.1', linewidths=0.7)
 plt.plot([L/4,L/4],[t[0],t[-1]],'w--',linewidth=1)
 plt.plot([L/4-0.25,L/4+0.25],[t[-1],t[-1]],'w--',linewidth=10)
 #plt.plot([L/4-0.25,L/4+0.25],[t[0]+dt.timedelta(minutes=-30),t[0]+dt.timedelta(minutes=-30)],'w--',linewidth=10)
@@ -191,9 +196,10 @@ for a in im.collections:
 cb = plt.colorbar(ticks=[conts[0], 0, conts[-1]])
 cb.ax.tick_params(labelsize=16)
 
-plt.clim(-10, 10)
+#plt.clim(-10, 10)
 cb.solids.set_edgecolor("face")
-plt.contour(x, t, temp, nc, colors='k')
+#plt.contour(x, t, temp, nc, colors='0.1', linewidths=0.6)
+plt.contour(x, t, ndimage.uniform_filter(temp,mode='nearest',size=(3,1)), nc, colors='0.1', linewidths=0.7)
 
 #cb.ax.set_yticklabels(['$-6f$','$-4f$','$-2f$','$0$','$2f$','$4f$','$6f$'],fontsize=24)
 plt.plot([L/4,L/4],[t[0],t[-1]],'w--',linewidth=1)
@@ -216,6 +222,8 @@ if savefig:
 else:
     plt.show()
 
-#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/working directory/UpdatedHov.pdf', bbox_inches='tight')
+#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/Manuscript/UpdatedHovStrong.pdf', bbox_inches='tight')
+plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/Supporting Information/UpdatedHovStrong.pdf', bbox_inches='tight')
+
 #close data
 

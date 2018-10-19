@@ -2,8 +2,10 @@
 #
 # Script to plot momentum and temperature budget terms
 # over time
+
 # RSA 11-13-17
 #
+# JUST DOING A SUPER HACKY THING HERE AND RELOADING EVERYTHING USING V MOM TERMS WITHOUT CHANGING LABELS
 ######################################################
 from netCDF4 import Dataset
 import numpy as np
@@ -25,57 +27,46 @@ outfig_T = 'budget_hov_T_200m.png'
 zplot = 50
 
 #FORCED#####################################################################################
-#dirall = '/media/ExtDriveFolder/WRFRUNS'
-#wrfout = ['/wrfout_d01_0001-01-02_', \
-#          '/wrfout_d01_0001-01-02_', \
-#          '/wrfout_d01_0001-01-02_', \
-#          '/wrfout_d01_0001-01-02_', \
-#          '/wrfout_d01_0001-01-03_', \
-#          '/wrfout_d01_0001-01-03_']
-#hrs = ['11','14','18','21','01','04']
-#mins = ['00','30','00','30','00','30']
-
-# ONLY LOAD WHAT IS NECESSARY FOR PLOTS (SAVE TIME)
-dirall = '/media/ExtDriveFolder/WRFRUNS/StrongRun1'
+dirall = '/media/ExtDriveFolder/WRFRUNS/WeakRun2'
 wrfout = ['/wrfout_d01_0001-01-02_', \
           '/wrfout_d01_0001-01-02_', \
-          '/wrfout_d01_0001-01-02_']
-hrs = ['11','14','18',]
-mins = ['00','30','00']
-
+          '/wrfout_d01_0001-01-02_', \
+          '/wrfout_d01_0001-01-02_', \
+          '/wrfout_d01_0001-01-03_', \
+          '/wrfout_d01_0001-01-03_']
+hrs = ['11','14','18','21','01','04']
+mins = ['00','30','00','30','00','30']
 
 nt = 0
 nk = 100
 nk += 1
-
-nts = 63
 # Preallocate
-adv_u_u_avg = np.zeros((nts, nk, 501))
-adv_u_w_avg = np.zeros((nts, nk, 501))
+adv_u_u_avg = np.zeros((106, nk, 501))
+adv_u_w_avg = np.zeros((106, nk, 501))
 
-ududx_avg = np.zeros((nts, nk, 500))
-ddxupup_avg = np.zeros((nts, nk, 500))
-wdudz_avg = np.zeros((nts, nk, 499))
-ddzupwp_avg = np.zeros((nts, nk, 499))
+ududx_avg = np.zeros((106, nk, 500))
+ddxupup_avg = np.zeros((106, nk, 500))
+wdudz_avg = np.zeros((106, nk, 499))
+ddzupwp_avg = np.zeros((106, nk, 499))
 
-pres_u_avg= np.zeros((nts, nk, 501))
-cor_u_avg = np.zeros((nts, nk, 501))
-hdiff_u_avg = np.zeros((nts, nk, 501))
-vdiff_u_avg = np.zeros((nts, nk, 501))
+pres_u_avg= np.zeros((106, nk, 501))
+cor_u_avg = np.zeros((106, nk, 501))
+hdiff_u_avg = np.zeros((106, nk, 501))
+vdiff_u_avg = np.zeros((106, nk, 501))
 
-adv_w_u_avg = np.zeros((nts, nk, 500))
-adv_w_w_avg = np.zeros((nts, nk, 500))
-pres_w_avg = np.zeros((nts, nk, 500))
-cor_w_avg = np.zeros((nts, nk, 500))
-hdiff_w_avg = np.zeros((nts, nk, 500))
-vdiff_w_avg = np.zeros((nts, nk, 500))
+adv_w_u_avg = np.zeros((106, nk, 500))
+adv_w_w_avg = np.zeros((106, nk, 500))
+pres_w_avg = np.zeros((106, nk, 500))
+cor_w_avg = np.zeros((106, nk, 500))
+hdiff_w_avg = np.zeros((106, nk, 500))
+vdiff_w_avg = np.zeros((106, nk, 500))
 
-adv_t_u_avg = np.zeros((nts, nk, 500))
-adv_t_w_avg = np.zeros((nts, nk, 500))
-hdiff_t_avg = np.zeros((nts, nk, 500))
-vdiff_t_avg = np.zeros((nts, nk, 500))
+adv_t_u_avg = np.zeros((106, nk, 500))
+adv_t_w_avg = np.zeros((106, nk, 500))
+hdiff_t_avg = np.zeros((106, nk, 500))
+vdiff_t_avg = np.zeros((106, nk, 500))
 
-dudt_avg = np.zeros((nts-2, nk, 501))
+dudt_avg = np.zeros((104, nk, 501))
 
 nk -= 1
 for k in range(1, nk+1):
@@ -152,6 +143,7 @@ for k in range(1, nk+1):
         ph = data.variables['PH'][:,k:k+2,:,:]
         phb = data.variables['PHB'][:,k:k+2,:,:]
         u = data.variables['U'][:,k-1:k+2,:,:]
+        v = data.variables['V'][:,k-1:k+2,:,:]
         w = data.variables['W'][:,k:k+2,:,:]
         T = data.variables['T'][:,k-1:k+2,:,:]
         fnm = data.variables['FNM'][:,k:k+2]
@@ -161,12 +153,12 @@ for k in range(1, nk+1):
     
         #time tendency terms
         if n==0:
-            u_allt = u[:,1,:,:]
+            v_allt = v[:,1,:,:]
             # dudt = u[:,1,:,:] / (10*60)
             # dwdt = 0.5 * (w[:,0,:,:] + w[:,1,:,:]) / (10*60)
             # dTdt = T[:,1,:,:] / (10*60)
         else:
-            u_allt = np.concatenate((u_allt,u[:,1,:,:]))
+            v_allt = np.concatenate((v_allt,v[:,1,:,:]))
             # dudt = np.concatenate((dudt,u[:,1,:,:]/(10*60)))
             # dudt = np.concatenate((dwdt,0.5*(w[:,0,:,:]+w[:,1,:,:])/(10*60)))
             # dTdt = np.concatenate((dTdt,T[:,1,:,:]/(10*60)))
@@ -188,68 +180,71 @@ for k in range(1, nk+1):
         #also flux divergences for T
     
         #project T to u and w points
-        Tu = 0.5*(T[:,:,:,1:] + T[:,:,:,:-1])
-        Tw = fnm[:,1:] * T[:,1:,:,:] + fnp[:,1:] * T[:,:-1,:,:]
-    
+#        Tu = 0.5*(T[:,:,:,1:] + T[:,:,:,:-1])
+#        Tw = fnm[:,1:] * T[:,1:,:,:] + fnp[:,1:] * T[:,:-1,:,:]
+#    
         #swap axes so that broadcasting works
         #index is now n,i,j,k instead of n,k,j,i
         uswap = np.swapaxes(u,1,3)
+        vswap = np.swapaxes(u,1,3)
         wswap = np.swapaxes(w,1,3)
-        Tswap = np.swapaxes(T,1,3)
-        Tu = np.swapaxes(Tu,1,3)
-        Tw = np.swapaxes(Tw,1,3)
+#        Tswap = np.swapaxes(T,1,3)
+#        Tu = np.swapaxes(Tu,1,3)
+#        Tw = np.swapaxes(Tw,1,3)
     
         #calculate primes as departure from along-front average
         umean = np.mean(uswap,axis=2)
+        vmean = np.mean(vswap,axis=2)
         wmean = np.mean(wswap,axis=2)
-        Tmean = np.mean(Tswap,axis=2)
-        Tumean = np.mean(Tu,axis=2)
-        Twmean = np.mean(Tw,axis=2)
+#        Tmean = np.mean(Tswap,axis=2)
+#        Tumean = np.mean(Tu,axis=2)
+#        Twmean = np.mean(Tw,axis=2)
     
         uprime = uswap - np.expand_dims(umean,axis=2)
+        vprime = uswap - np.expand_dims(vmean,axis=2)
         wprime = wswap - np.expand_dims(wmean,axis=2)
-        Tprime = Tswap - np.expand_dims(Tmean,axis=2)
-        Tuprime = Tu - np.expand_dims(Tumean,axis=2)
-        Twprime = Tw - np.expand_dims(Twmean,axis=2)
+#        Tprime = Tswap - np.expand_dims(Tmean,axis=2)
+#        Tuprime = Tu - np.expand_dims(Tumean,axis=2)
+#        Twprime = Tw - np.expand_dims(Twmean,axis=2)
     
         #calculate u'u' and w'w' with along-front average
-        upup = np.mean(uprime**2,axis=2)
-        wpwp = np.mean(wprime**2,axis=2)
+#        upup = np.mean(uprime**2,axis=2)
+#        wpwp = np.mean(wprime**2,axis=2)
     
         #calculate stress divergences (all at cell centers)
-        if n==0:
-            ududx = 0.5*(umean[:,1:,1] + umean[:,:-1,1]) * (umean[:,1:,1] - umean[:,:-1,1]) / dx
-            wdwdz = 0.5*(wmean[:,:,1:] + wmean[:,:,:-1]) * (wmean[:,:,1:] - wmean[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])
-            ddxupup = (upup[:,1:,1] - upup[:,:-1,1]) / dx
-            ddzwpwp = (wpwp[:,:,1:] - wpwp[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])
-            ttot = Tmean[:,:,1]
-        else:
-            ududx = np.concatenate((ududx,0.5*(umean[:,1:,1] + umean[:,:-1,1]) * (umean[:,1:,1] - umean[:,:-1,1]) / dx))
-            wdwdz = np.concatenate((wdwdz,0.5*(wmean[:,:,1:] + wmean[:,:,:-1]) * (wmean[:,:,1:] - wmean[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])))
-            ddxupup = np.concatenate((ddxupup,(upup[:,1:,1] - upup[:,:-1,1]) / dx))
-            ddzwpwp = np.concatenate((ddzwpwp,(wpwp[:,:,1:] - wpwp[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])))
-            ttot = np.concatenate((ttot, Tmean[:,:,1]))
-        #calculate u'T' and w'T' with along-front average
-        upTp = np.mean(uprime[:,1:-1,:,:]*Tuprime, axis=2)
-        wpTp = np.mean(wprime*Twprime, axis=2)
-    
-        #calculate flux divergences (all at cell centers)
-        if n==0:
-            udTdx = 0.5*(umean[:,2:-1,1] + umean[:,1:-2,1]) * (Tumean[:,1:,1] - Tumean[:,:-1,1]) / dx
-            wdTdz = 0.5*(wmean[:,:,1:] + wmean[:,:,:-1]) * (Twmean[:,:,1:] - Twmean[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])
-            ddxupTp = (upTp[:,1:,1] - upTp[:,:-1,1]) / dx
-            ddzwpTp = (wpTp[:,:,1:] - wpTp[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])
-        else:
-            udTdx = np.concatenate((udTdx,0.5*(umean[:,2:-1,1] + umean[:,1:-2,1]) * (Tumean[:,1:,1] - Tumean[:,:-1,1]) / dx))
-            wdTdz = np.concatenate((wdTdz,0.5*(wmean[:,:,1:] + wmean[:,:,:-1]) * (Twmean[:,:,1:] - Twmean[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])))
-            ddxupTp = np.concatenate((ddxupTp,(upTp[:,1:,1] - upTp[:,:-1,1]) / dx))
-            ddzwpTp = np.concatenate((ddzwpTp,(wpTp[:,:,1:] - wpTp[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])))
+#        if n==0:
+#            ududx = 0.5*(umean[:,1:,1] + umean[:,:-1,1]) * (umean[:,1:,1] - umean[:,:-1,1]) / dx
+#            wdwdz = 0.5*(wmean[:,:,1:] + wmean[:,:,:-1]) * (wmean[:,:,1:] - wmean[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])
+#            ddxupup = (upup[:,1:,1] - upup[:,:-1,1]) / dx
+#            ddzwpwp = (wpwp[:,:,1:] - wpwp[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])
+#        else:
+#            ududx = np.concatenate((ududx,0.5*(umean[:,1:,1] + umean[:,:-1,1]) * (umean[:,1:,1] - umean[:,:-1,1]) / dx))
+#            wdwdz = np.concatenate((wdwdz,0.5*(wmean[:,:,1:] + wmean[:,:,:-1]) * (wmean[:,:,1:] - wmean[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])))
+#            ddxupup = np.concatenate((ddxupup,(upup[:,1:,1] - upup[:,:-1,1]) / dx))
+#            ddzwpwp = np.concatenate((ddzwpwp,(wpwp[:,:,1:] - wpwp[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])))
+#    
+#        #calculate u'T' and w'T' with along-front average
+#        upTp = np.mean(uprime[:,1:-1,:,:]*Tuprime, axis=2)
+#        wpTp = np.mean(wprime*Twprime, axis=2)
+#    
+#        #calculate flux divergences (all at cell centers)
+#        if n==0:
+#            udTdx = 0.5*(umean[:,2:-1,1] + umean[:,1:-2,1]) * (Tumean[:,1:,1] - Tumean[:,:-1,1]) / dx
+#            wdTdz = 0.5*(wmean[:,:,1:] + wmean[:,:,:-1]) * (Twmean[:,:,1:] - Twmean[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])
+#            ddxupTp = (upTp[:,1:,1] - upTp[:,:-1,1]) / dx
+#            ddzwpTp = (wpTp[:,:,1:] - wpTp[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])
+#        else:
+#            udTdx = np.concatenate((udTdx,0.5*(umean[:,2:-1,1] + umean[:,1:-2,1]) * (Tumean[:,1:,1] - Tumean[:,:-1,1]) / dx))
+#            wdTdz = np.concatenate((wdTdz,0.5*(wmean[:,:,1:] + wmean[:,:,:-1]) * (Twmean[:,:,1:] - Twmean[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])))
+#            ddxupTp = np.concatenate((ddxupTp,(upTp[:,1:,1] - upTp[:,:-1,1]) / dx))
+#            ddzwpTp = np.concatenate((ddzwpTp,(wpTp[:,:,1:] - wpTp[:,:,:-1]) / (zs[:,:,1:] - zs[:,:,:-1])))
     
         ######################################################################################
         #calculate mean and turbulent stress divergences for cross terms (u,w)
     
         #project u and w to e points
         ue = fnm[:,1:] * u[:,1:,:,1:-1] + fnp[:,1:] * u[:,:-1,:,1:-1] #dont need i edge values
+        ve = fnm[:,1:] * u[:,1:,:,1:-1] + fnp[:,1:] * u[:,:-1,:,1:-1] #dont need i edge values
         we = 0.5 * (w[:,:,:,1:] + w[:,:,:,:-1])
     
         #swap axes so that broadcasting works
@@ -288,7 +283,6 @@ for k in range(1, nk+1):
     
 #    adv_u_u_avg[:,k,:] = np.mean(adv_u_u,axis=ax)
 #    adv_u_w_avg[:,k,:] = np.mean(adv_u_w,axis=ax)
- 
     ududx_avg[:,k,:] = np.squeeze(ududx)
     ddxupup_avg[:,k,:] = np.squeeze(ddxupup)
     wdudz_avg[:,k,:] = np.squeeze(wdudz)
@@ -319,23 +313,19 @@ for k in range(1, nk+1):
 #Set time range
 plt.rcParams.update({'font.size': 18})
 
-nh = 2
-nh = 0
+nh = 0.25
 zl = 500
 xl = [2.5, 7.5]
-xlw = [2, 8]
-xlw = [1.5, 8]
-xlc = [3, 7]
-xlim = 2e-4
-nmin = 60
-fig = plt.figure(figsize=(12,10))
+xlim = 1.5e-4
+
+fig = plt.figure(figsize=(10,10))
 for i in range(0, 2):
     #Set x range
-    tind1 = np.int((i)*nmin/10)+nh
-    tind2 = np.int((i+1)*nmin/10)+nh
+    tind1 = np.int((i+nh)*60/10)
+    tind2 = np.int((i+1+nh)*60/10)
 
     warm = True
-    xl = xlw
+
     xlind1 = np.where(xs>xl[0])[0][0]
     xlind2 = np.where(xs>xl[1])[0][0]
     xr = range(xlind1, xlind2)
@@ -361,7 +351,6 @@ for i in range(0, 2):
     plt.xlabel('[m s$^{-2}$]')
     #Set x range
     warm = False
-    xl = xlc
     xlind1 = np.where(xs>xl[0])[0][0]
     xlind2 = np.where(xs>xl[1])[0][0]
     xr = range(xlind1, xlind2)
@@ -397,7 +386,7 @@ plt.tight_layout()
 plt.subplots_adjust(right = 0.75)
 fig.legend((l1, l2, l3, l4, l5, l6, l7), labels, loc="center right", fontsize=18)
 
-#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/Manuscript/MomProfilesStrong.pdf', bbox_inches='tight')
+#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/working directory/MomProfiles.pdf', bbox_inches='tight')
 
 #%% HOV
 #Set x range

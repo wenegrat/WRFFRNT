@@ -30,7 +30,7 @@ savefig = False
 zplot = 50
 
 #FORCED#####################################################################################
-dirall = '/media/ExtDriveFolder/WRFRUNS/WeakRun1'
+dirall = '/media/ExtDriveFolder/WRFRUNS/StrongRun1'
 wrfout = ['/wrfout_d01_0001-01-02_']
 hrs = ['11']
 mins = ['00']
@@ -73,19 +73,21 @@ ti = 0
 
 fig, ax = plt.subplots(1,2,sharey=True, figsize=(6, 6))
 
-ax[0].plot(tavg[ti,:]+300, z[0,:,0,0])
+ax[0].plot(tavg[ti,:]+300, z[ti,:], linewidth=2)
 ax[0].grid()
 ax[0].set_ylabel('z [m]')
 ax[0].set_ylim((0, 2000))
 ax[0].set_xlim((298, 304))
 ax[0].set_xticks([298, 300, 302, 304])
-ax[0].set_xlabel('$^\circ$ K')
+ax[0].set_xlabel('K')
 
-ax[1].plot(uavg[ti,:], z[0,:,0,0], label='$U_o$')
-ax[1].plot(vavg[ti,:], z[0,:,0,0], label='$V_o$')
+ax[1].plot(uavg[ti,:], z[ti,:], label='$U_o$', linewidth=2)
+ax[1].plot(vavg[ti,:], z[ti,:], label='$V_o$', linewidth=2)
 ax[1].grid()
-ax[1].legend()
+#ax[1].legend()
 ax[1].set_xlim((0, 6))
 ax[1].set_xticks([0, 2, 4, 6])
 ax[1].set_xlabel('m s$^{-1}$')
 plt.tight_layout()
+
+#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/Supporting Information/InitProfiles.pdf', bbox_inches='tight')

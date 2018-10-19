@@ -33,7 +33,7 @@ outfig = 'u_mix_hov.png'
 zplot = 10
 
 #FORCED#####################################################################################
-dirall = '/media/ExtDriveFolder/WRFRUNS'
+dirall = '/media/ExtDriveFolder/WRFRUNS/StrongRun1'
 wrfout = ['/wrfout_d01_0001-01-02_', \
           '/wrfout_d01_0001-01-02_', \
           '/wrfout_d01_0001-01-02_', \
@@ -319,7 +319,8 @@ t = np.array([tStart + dt.timedelta(minutes=n*10) for n in range(nt)])
 
 cm = 'RdBu_r'
 
-cl = 3e-11
+cl = 3e-12
+cl = 3e-10
 conts = np.linspace(-cl, cl, 100)
 ls = 14
 L = 10.0
@@ -411,7 +412,7 @@ else:
     plt.show()
 
 
-#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/working directory/frontogenesis.pdf', bbox_inches='tight')
+#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/Manuscript/frontogenesisStrong.pdf', bbox_inches='tight')
 
 #close data
 #data.close()
