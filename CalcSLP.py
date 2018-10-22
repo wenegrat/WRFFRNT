@@ -12,6 +12,8 @@ import matplotlib.dates as mdates
 import datetime as dt
 import scipy.integrate as integrate
 from cmocean import cm as cmo
+from scipy import ndimage
+
 plt.rcParams['text.usetex'] = True
 plt.rcParams['mathtext.fontset'] = 'stix'
 plt.rcParams['font.family'] = 'STIXGeneral'
@@ -87,6 +89,13 @@ t_avg = np.mean(t, axis=2)
 t_int = integrate.cumtrapz(t_avg, x=np.squeeze(z), axis=1)
 t_avg = t_int/z[:,1:,0,:]
 
+#%%
+#ndimage.uniform_filter(vk,mode='wrap',size=(1,fsizey,fsizex))
+slplap = (slp_avg[:,2:] - 2*slp_avg[:,1:-1] + slp_avg[:,:-2])/20**2
+slplap = ndimage.uniform_filter(slplap, mode = 'wrap', size=(1, 50))
+tr = range(60,105)
+plt.figure()
+plt.plot(np.linspace(0, 10, 498),np.mean( slplap[tr,:], axis=0))
 #%% CALCULATE INVISCID SEA-BREEZE PRESSURE ACCEL
 R = 287
 p0 = 1000

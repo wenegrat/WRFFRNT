@@ -21,7 +21,7 @@ outfig_w = 'budget_hov_w_10m.png'
 outfig_T = 'budget_hov_T_10m.png'
 
 #dz=5
-zplot = 300
+zplot = 500
 
 #FORCED#####################################################################################
 #dirall = '/media/ExtDriveFolder/WRFRUNS/WeakRun2'
@@ -409,7 +409,7 @@ tplot = [t[1:-1],t,t,t,t,t,t,t,t]
 tendplot = [dTdt_avg,-udTdx,-wdTdz,-ddxupTp,-ddzwpTp[:,:,0] +vdiff_t_avg,hdiff_t_avg,vdiff_t_avg]
 tendmax = 5e-5
 titles = ['dTdt','udTdx','wdTdz','ddxupTp','ddzwptp','$HDIFF_T$','$VDIFF_T$']
-for n in range(9):
+for n in range(7):
     plt.subplot(3,3,n+1)
     plt.pcolormesh(xplot[n],tplot[n],np.squeeze(tendplot[n]),cmap='RdBu_r')
     plt.colorbar()
@@ -426,7 +426,14 @@ if savefig:
 else:
     plt.show()
     
-#%%
+#%% VERT VEL HOV
+fsizex = 25 #250
+fsizey = 25 #150
+w_filt = ndimage.uniform_filter(w_allt,mode='wrap',size=(1,fsizey,fsizex))
+plt.figure()
+plt.pcolor(x, t, np.mean(w_filt, axis=1))
+plt.colorbar()
+plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 #%% MERIDIONAL
 plt.figure(figsize=(20,12))
 
@@ -460,6 +467,49 @@ if savefig:
 else:
     plt.show()
         
+    
+#%%
+    # SPATIAL AVERAGE PLOT TEMPERATURE
+tStart = dt.datetime(2000,1,1,00,00,00)
+t = np.array([tStart + dt.timedelta(minutes=n*10) for n in range(nt)])
+L = 10.0
+
+#Set x range
+warm = False
+xl = [2.5, 7.5]
+xlind1 = np.where(xs>xl[0])[0][0]
+xlind2 = np.where(xs>xl[1])[0][0]
+xr = range(xlind1, xlind2)
+# WARM PATCH
+if warm:
+    xr = np.r_[range(0, xlind1), range(xlind2, 498)]
+
+
+dTdt_savg = np.mean(dTdt_avg[:,xr], axis=-1)
+udTdx_savg = np.mean(udTdx[:,xr], axis=-1)
+ddxupTp_savg = np.mean(ddxupTp[:,xr], axis=-1)
+ddxwpTp_savg = np.mean(ddzwpTp[:,xr,0], axis=-1)
+
+wdTdz_savg = np.mean(wdTdz[:,xr,0], axis=-1)
+vdiff_savg = np.mean(-ddzwpTp[:,xr,0]+vdiff_t_avg[:,xr], axis=-1)
+hdiff_savg = np.mean(-ddxupTp[:,xr]+hdiff_t_avg[:,xr], axis=-1)
+
+#plot hovmoller for u tendency terms
+plt.figure()
+
+xplot = [xs,x,xs[1:-1],x,xs[1:-1],xs,xs,xs,xs]
+tplot = [t[1:-1],t,t,t,t,t,t,t,t]
+tendplot = [dTdt_savg, -udTdx_savg, -wdTdz_savg,  vdiff_savg, hdiff_savg]
+leg = ['dTdt', 'udTdx', 'wdTdz', 'VDIFF', 'HDIFF']
+for n in range(5):
+    plt.plot(tplot[n], np.squeeze(tendplot[n]), label=leg[n])
+    
+#total = -ududx_savg -wdudz_savg+ vdiff_savg+ hdiff_savg+ pressu_savg+ coru_savg 
+##total = advw_savg + advu_savg+ vdiff_savg+ hdiff_savg+ pressu_savg+ coru_savg 
+#
+#plt.plot(tplot[-1], total, linestyle=':', label='total')    
+plt.legend()
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 #%%
     # SPATIAL AVERAGE PLOT
 tStart = dt.datetime(2000,1,1,00,00,00)
@@ -467,7 +517,7 @@ t = np.array([tStart + dt.timedelta(minutes=n*10) for n in range(nt)])
 L = 10.0
 
 #Set x range
-warm = True
+warm = False
 xl = [2.5, 7.5]
 xlind1 = np.where(xs>xl[0])[0][0]
 xlind2 = np.where(xs>xl[1])[0][0]
@@ -498,10 +548,10 @@ leg = ['dvdt', 'udvdx', 'wdvdz', 'VDIFF', 'HDIFF', 'PRESS', 'COR']
 for n in range(7):
     plt.plot(tplot[n], np.squeeze(tendplot[n]), label=leg[n])
     
-total = -ududx_savg -wdudz_savg+ vdiff_savg+ hdiff_savg+ pressu_savg+ coru_savg 
-#total = advw_savg + advu_savg+ vdiff_savg+ hdiff_savg+ pressu_savg+ coru_savg 
-
-plt.plot(tplot[-1], total, linestyle=':', label='total')    
+#total = -ududx_savg -wdudz_savg+ vdiff_savg+ hdiff_savg+ pressu_savg+ coru_savg 
+##total = advw_savg + advu_savg+ vdiff_savg+ hdiff_savg+ pressu_savg+ coru_savg 
+#
+#plt.plot(tplot[-1], total, linestyle=':', label='total')    
 plt.legend()
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 

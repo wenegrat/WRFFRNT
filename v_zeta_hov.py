@@ -223,7 +223,7 @@ else:
     plt.show()
 
 #plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/Manuscript/UpdatedHovStrong.pdf', bbox_inches='tight')
-plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/Supporting Information/UpdatedHovStrong.pdf', bbox_inches='tight')
+#plt.savefig('/home/jacob/Dropbox/wrf_fronts/ATMOSMS/Supporting Information/UpdatedHov.pdf', bbox_inches='tight')
 
 #close data
 
